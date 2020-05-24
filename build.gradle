@@ -32,6 +32,22 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
 gradlePlugin {
     plugins {
         lolGradlePlugin {
@@ -56,6 +72,7 @@ task functionalTest(type: Test){
     testClassesDirs = sourceSets.functionalTests.output.classesDirs
     classpath = sourceSets.functionalTests.runtimeClasspath
 }
+
 
 
 check.dependsOn functionalTest

@@ -10,14 +10,16 @@ import org.gradle.api.Project
  */
 class LolGradlePlugin : Plugin<Project> {
 
+    private lateinit var ext: LolGradlePluginExt
+
     companion object {
         const val TASK_CAPTURE = "capture"
     }
 
     override fun apply(project: Project) {
 
-        val ext = project.extensions.create("lol-gradle-plugin-ext", LolGradlePluginExt::class.java)
-        IS_LOGGER_ENABLED = ext.isLogging
+        this.ext = project.extensions.create("lol-gradle", LolGradlePluginExt::class.java)
+        IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
         project.task(TASK_CAPTURE) {
             it.doLast {
