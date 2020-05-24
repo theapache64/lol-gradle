@@ -1,8 +1,18 @@
-plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.72'
-    id 'java-gradle-plugin'
-    id 'maven'
+buildscript {
+    repositories {
+        // For development only
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.theapache64.lol-gradle:lol-gradle:v1.0.0-alpha01'
+    }
 }
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+apply plugin: 'com.theapache64.lol-gradle'
 
 group 'com.theapache64.lol-gradle'
 version 'v1.0.0-alpha01'
@@ -20,13 +30,4 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-gradlePlugin {
-    plugins {
-        lolGradlePlugin {
-            id = 'com.theapache64.lol-gradle'
-            implementationClass = 'com.theapache64.lolgradle.LolGradlePlugin'
-        }
-    }
 }
