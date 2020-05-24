@@ -17,7 +17,7 @@ open class LolGradlePluginExt {
      */
     var lolPicStrategy: Strategy = Strategy.NONE
 
-    var waitTimeInSec = 10
+    var waitTimeInSec = 10L
 
     enum class Strategy {
         /**

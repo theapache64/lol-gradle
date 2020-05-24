@@ -6,9 +6,7 @@ package com.theapache64.lolgradle
 import com.winterbe.expekt.should
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.rules.TemporaryFolder
 import java.io.File
 
@@ -18,18 +16,32 @@ import java.io.File
 class LolGradlePluginTest {
 
 
+    companion object {
+        private lateinit var process: Process
+
+        @BeforeClass
+        @JvmStatic
+        fun beforeClass() {
+            println("Cam opened")
+            process = Runtime.getRuntime().exec("droidcam-cli 192.168.1.101 4747")
+        }
+
+        @AfterClass
+        @JvmStatic
+        fun afterClass() {
+            println("Cam closed")
+            process.destroy()
+        }
+
+    }
+
     @get:Rule
     val testProjectDir = TemporaryFolder()
 
-    private lateinit var buildGradleFile: File
-    private lateinit var gradleRunner: GradleRunner
 
-    @Before
-    fun setUp() {
-        buildGradleFile = testProjectDir.newFile("build.gradle")
-
-        // Adding lol-gradle plugin
-        buildGradleFile.appendText(
+    @Test
+    fun `check test setup`() {
+        val gradleRunner = getRunner(
             """
             plugins {
                 id 'java'
@@ -37,28 +49,49 @@ class LolGradlePluginTest {
             }
         """.trimIndent()
         )
-
-        gradleRunner = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir.root)
-            .withTestKitDir(testProjectDir.newFolder())
-    }
-
-    @Test
-    fun `check test setup`() {
         val result = gradleRunner.withArguments("tasks")
             .build()
 
         println(result.output)
     }
 
+    private fun getRunner(gradleFileContent: String): GradleRunner {
+        val buildGradleFile = testProjectDir.newFile("build.gradle")
+
+        // Adding lol-gradle plugin
+        buildGradleFile.appendText(gradleFileContent)
+
+        return GradleRunner.create()
+            .withPluginClasspath()
+            .withProjectDir(testProjectDir.root)
+            .withTestKitDir(testProjectDir.newFolder())
+    }
+
+    /**
+     * To pass this test, a camera should be connected to the system.
+     */
     @Test
-    fun `Capture`() {
+    fun `Capture success`() {
+
+        val gradleRunner = getRunner(
+            """
+            plugins {
+                id 'java'
+                id 'com.theapache64.lol-gradle'
+            }
+        """.trimIndent()
+        )
+        val outputDir = File("${System.getProperty("user.home")}/lol-gradle/${gradleRunner.projectDir.name}")
+        outputDir.deleteRecursively()
+
         val result = gradleRunner
             .withArguments(LolGradlePlugin.TASK_CAPTURE)
             .build()
 
         result.task(":${LolGradlePlugin.TASK_CAPTURE}")!!.outcome.should.equal(TaskOutcome.SUCCESS)
         result.output.should.contain("webcam(s) available")
+
+        outputDir.listFiles().should.not.`null`
+        outputDir.listFiles()?.size.should.equal(1)
     }
 }
