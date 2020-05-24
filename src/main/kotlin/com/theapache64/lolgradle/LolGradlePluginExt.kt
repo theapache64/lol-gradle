@@ -13,12 +13,33 @@ open class LolGradlePluginExt {
     var isLoggingEnabled: Boolean = false
 
     /**
+     * Directory name. If not given, project name will be considered as dirName.
+     */
+    var dirName: String? = null
+
+    /**
+     * Output directory path. If not given, home directory will be considered as outputDir
+     */
+    var outputDir: String? = null
+
+    /**
      * To control what should happen if camera not available.
      */
     var lolPicStrategy: Strategy = Strategy.NONE
-
     var waitTimeInSec = 10L
 
+    /**
+     * Output style
+     */
+    var style: Style = Style.IMPACT
+
+    enum class Style {
+        IMPACT, MODERN
+    }
+
+    /**
+     * Waiting strategy
+     */
     enum class Strategy {
         /**
          * Do nothing

@@ -8,6 +8,7 @@ group 'com.theapache64.lol-gradle'
 version '0.0.1'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -18,7 +19,7 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 
     // Expekt:BDD assertion library for Kotlin
-    testImplementation 'com.winterbe:expekt:0.5.0'
+    testImplementation 'com.theapache64:expekt:0.0.1'
 
     // Webcam Capture:This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).
     implementation 'com.github.sarxos:webcam-capture:0.3.12'

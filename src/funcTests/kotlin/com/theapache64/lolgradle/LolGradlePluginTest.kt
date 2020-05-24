@@ -2,8 +2,7 @@
 
 package com.theapache64.lolgradle
 
-
-import com.winterbe.expekt.should
+import com.theapache64.expekt.should
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.*
@@ -12,6 +11,7 @@ import java.io.File
 
 /**
  * Created by theapache64 : May 24 Sun,2020 @ 12:51
+ * To pass this test, a camera should be connected to the system.
  */
 class LolGradlePluginTest {
 
@@ -67,9 +67,21 @@ class LolGradlePluginTest {
             .withTestKitDir(testProjectDir.newFolder())
     }
 
-    /**
-     * To pass this test, a camera should be connected to the system.
-     */
+    private fun assertOutputDirHasOneLolPic(outputDir: File, gradleRunner: GradleRunner): File {
+
+        outputDir.deleteRecursively()
+
+        val result = gradleRunner
+            .withArguments(LolGradlePlugin.TASK_CAPTURE)
+            .build()
+
+        result.task(":${LolGradlePlugin.TASK_CAPTURE}")!!.outcome.should.equal(TaskOutcome.SUCCESS)
+        result.output.should.contain("webcam(s) available")
+        outputDir.listFiles().should.not.`null`
+        outputDir.listFiles()?.size.should.equal(1)
+        return outputDir.listFiles()!!.first()
+    }
+
     @Test
     fun `Capture success`() {
 
@@ -81,17 +93,72 @@ class LolGradlePluginTest {
             }
         """.trimIndent()
         )
+
         val outputDir = File("${System.getProperty("user.home")}/lol-gradle/${gradleRunner.projectDir.name}")
-        outputDir.deleteRecursively()
-
-        val result = gradleRunner
-            .withArguments(LolGradlePlugin.TASK_CAPTURE)
-            .build()
-
-        result.task(":${LolGradlePlugin.TASK_CAPTURE}")!!.outcome.should.equal(TaskOutcome.SUCCESS)
-        result.output.should.contain("webcam(s) available")
-
-        outputDir.listFiles().should.not.`null`
-        outputDir.listFiles()?.size.should.equal(1)
+        assertOutputDirHasOneLolPic(outputDir, gradleRunner)
     }
+
+    @Test
+    fun `Dir name config`() {
+        val dirName = "MyLolPics"
+        val gradleRunner = getRunner(
+            """
+            plugins {
+                id 'java'
+                id 'com.theapache64.lol-gradle'
+            }
+            
+            lolGradle {
+                dirName = "$dirName"    
+            }
+        """.trimIndent()
+        )
+
+        val outputDir = File("${System.getProperty("user.home")}/lol-gradle/$dirName")
+        val image = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
+        image.parentFile.name.should.equal(dirName)
+    }
+
+    @Test
+    fun `Output path config`() {
+        val outputPath = "${System.getProperty("user.home")}/Desktop/MyLolPicsAtDesktop"
+        val gradleRunner = getRunner(
+            """
+            plugins {
+                id 'java'
+                id 'com.theapache64.lol-gradle'
+            }
+            
+            lolGradle {
+                outputDir = "$outputPath"    
+            }
+        """.trimIndent()
+        )
+
+        val outputDir = File(outputPath)
+        val image = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
+        image.parentFile.absolutePath.should.equal(outputPath)
+    }
+
+    @Test
+    fun `Impact style`() {
+        val outputPath = "${System.getProperty("user.home")}/Desktop/MyLolPicsAtDesktop"
+        val gradleRunner = getRunner(
+            """
+            plugins {
+                id 'java'
+                id 'com.theapache64.lol-gradle'
+            }
+            
+            lolGradle {
+                style = "IMPACT"   
+            }
+        """.trimIndent()
+        )
+
+        val outputDir = File(outputPath)
+        val image = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
+        image.name.should.contain("impact")
+    }
+
 }

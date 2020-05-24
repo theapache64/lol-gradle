@@ -16,26 +16,32 @@ class LolGradlePlugin : Plugin<Project> {
 
 
     companion object {
+        const val PLUGIN_NAME = "lol-gradle"
         const val TASK_CAPTURE = "capture"
+        private const val DEFAULT_WAIT_IN_SEC = 5L
     }
 
     override fun apply(project: Project) {
 
+        val ext = project.extensions.create("lolGradle", LolGradlePluginExt::class.java)
+
         project.task(TASK_CAPTURE) {
             it.doLast {
-                capture(project)
+                capture(ext, project)
             }
         }
     }
 
-    private fun capture(project: Project) {
+    private fun capture(ext: LolGradlePluginExt, project: Project) {
 
-        val ext = project.extensions.create("lol-gradle", LolGradlePluginExt::class.java)
         IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
+
         println("Capturing lolpic...")
+        // Getting timeout value
         val timeout = when (ext.lolPicStrategy) {
-            LolGradlePluginExt.Strategy.NONE, LolGradlePluginExt.Strategy.FAIL -> TimeUnit.SECONDS.toMillis(2)
+            LolGradlePluginExt.Strategy.NONE,
+            LolGradlePluginExt.Strategy.FAIL -> TimeUnit.SECONDS.toMillis(DEFAULT_WAIT_IN_SEC)
             LolGradlePluginExt.Strategy.WAIT -> TimeUnit.SECONDS.toMillis(ext.waitTimeInSec)
             LolGradlePluginExt.Strategy.WAIT_FOREVER -> Long.MAX_VALUE
         }
@@ -52,12 +58,16 @@ class LolGradlePlugin : Plugin<Project> {
             // cam found
             val defaultCam = webCams.first()
             defaultCam.open()
-            val imageFile =
-                File("${System.getProperty("user.home")}/lol-gradle/${project.name}/${System.currentTimeMillis()}.png")
+
+            val dirName = ext.dirName ?: project.name
+            val outputDir = ext.outputDir ?: "${System.getProperty("user.home")}/$PLUGIN_NAME/$dirName"
+
+            val imageFile = File("$outputDir/${System.currentTimeMillis()}.png")
 
             if (!imageFile.parentFile.exists()) {
                 require(imageFile.parentFile.mkdirs()) { "Failed to create parent directory" }
             }
+
             ImageIO.write(defaultCam.image, "PNG", imageFile)
         }
     }
