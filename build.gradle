@@ -15,7 +15,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // JUnit:JUnit is a unit testing framework for Java, created by Erich Gamma and Kent Beck.
-    testImplementation 'junit:junit:4.13'
+    testCompile 'junit:junit:4.13'
 
     // Expekt:BDD assertion library for Kotlin
     testImplementation 'com.winterbe:expekt:0.5.0'
@@ -46,7 +46,7 @@ sourceSets {
     functionalTests {
         kotlin.srcDir file('src/funcTests/kotlin')
         resources.srcDir file('src/funcTests/resources')
-        compileClasspath += sourceSets.main.output + configurations.runtimeClasspath
+        compileClasspath += sourceSets.main.output + configurations.compileClasspath + configurations.testRuntime
         runtimeClasspath += output + compileClasspath
     }
 }
