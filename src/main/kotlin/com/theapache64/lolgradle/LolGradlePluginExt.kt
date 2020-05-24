@@ -7,7 +7,6 @@ import java.util.*
  */
 open class LolGradlePluginExt {
 
-
     /**
      * To control logging
      */
@@ -40,9 +39,5 @@ open class LolGradlePluginExt {
          * Fail if camera not available
          */
         FAIL
-    }
-
-    fun setGoomal(x: Any) {
-
     }
 }
