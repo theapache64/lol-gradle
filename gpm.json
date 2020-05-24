@@ -1,0 +1,46 @@
+{
+ "added": [
+  {
+   "id": 1,
+   "type": "testImplementation",
+   "installed_name": "junit",
+   "gpm_dep": {
+    "artifact_id": "junit",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/junit/junit",
+    "get_from": "Central",
+    "group_id": "junit",
+    "name": "JUnit",
+    "description": "JUnit is a unit testing framework for Java, created by Erich Gamma and Kent Beck."
+   }
+  },
+  {
+   "id": 2,
+   "type": "testImplementation",
+   "installed_name": "expekt",
+   "gpm_dep": {
+    "artifact_id": "expekt",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/com.winterbe/expekt",
+    "get_from": "Central",
+    "group_id": "com.winterbe",
+    "name": "Expekt",
+    "description": "BDD assertion library for Kotlin"
+   }
+  },
+  {
+   "id": 3,
+   "type": "implementation",
+   "installed_name": "webcam-capture",
+   "gpm_dep": {
+    "artifact_id": "webcam-capture",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/com.github.sarxos/webcam-capture",
+    "get_from": "Central",
+    "group_id": "com.github.sarxos",
+    "name": "Webcam Capture",
+    "description": "This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS)."
+   }
+  }
+ ]
+}

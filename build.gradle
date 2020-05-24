@@ -13,6 +13,17 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    // JUnit:JUnit is a unit testing framework for Java, created by Erich Gamma and Kent Beck.
+    testImplementation 'junit:junit:4.13'
+
+    // Expekt:BDD assertion library for Kotlin
+    testImplementation 'com.winterbe:expekt:0.5.0'
+
+    // Webcam Capture:This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).
+    implementation 'com.github.sarxos:webcam-capture:0.3.12'
+
+
 }
 
 compileKotlin {
@@ -30,3 +41,22 @@ gradlePlugin {
         }
     }
 }
+
+sourceSets {
+    functionalTests {
+        kotlin.srcDir file('src/funcTests/kotlin')
+        resources.srcDir file('src/funcTests/resources')
+        compileClasspath += sourceSets.main.output + configurations.runtimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+task functionalTest(type: Test){
+    description = 'Runs the functional tests'
+    group = 'verification'
+    testClassesDirs = sourceSets.functionalTests.output.classesDirs
+    classpath = sourceSets.functionalTests.runtimeClasspath
+}
+
+check.dependsOn functionalTest
+
