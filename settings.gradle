@@ -1,3 +1,4 @@
 rootProject.name = 'lol-gradle'
 include 'example'
+include 'example'
 
