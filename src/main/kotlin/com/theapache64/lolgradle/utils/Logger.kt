@@ -6,7 +6,7 @@ package com.theapache64.lolgradle.utils
 var IS_LOGGER_ENABLED = false
     set(value) {
         if (value) {
-            println("Logging enabled...")
+            log("Logging enabled...")
             field = value
         }
     }

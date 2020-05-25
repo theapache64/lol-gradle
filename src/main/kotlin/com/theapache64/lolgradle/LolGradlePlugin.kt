@@ -2,6 +2,7 @@ package com.theapache64.lolgradle
 
 import com.github.sarxos.webcam.Webcam
 import com.theapache64.lolgradle.utils.IS_LOGGER_ENABLED
+import com.theapache64.lolgradle.utils.log
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.io.File
@@ -37,7 +38,7 @@ class LolGradlePlugin : Plugin<Project> {
         IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
 
-        println("Capturing lolpic...")
+        log("Capturing lolpic...")
         // Getting timeout value
         val timeout = when (ext.lolPicStrategy) {
             LolGradlePluginExt.Strategy.NONE,
@@ -47,7 +48,7 @@ class LolGradlePlugin : Plugin<Project> {
         }
 
         val webCams = Webcam.getWebcams(timeout)
-        println("${webCams.size} webcam(s) available")
+        log("${webCams.size} webcam(s) available")
 
         if (webCams.isEmpty()) {
             if (ext.lolPicStrategy == LolGradlePluginExt.Strategy.FAIL) {
@@ -55,6 +56,7 @@ class LolGradlePlugin : Plugin<Project> {
             }
 
         } else {
+
             // cam found
             val defaultCam = webCams.first()
             defaultCam.open()
