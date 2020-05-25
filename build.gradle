@@ -4,6 +4,8 @@ plugins {
     id 'maven'
 }
 
+apply plugin: 'kotlin-kapt'
+
 group 'com.theapache64.lol-gradle'
 version '0.0.1'
 
@@ -24,6 +26,12 @@ dependencies {
     // Webcam Capture:This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).
     implementation 'com.github.sarxos:webcam-capture:0.3.12'
 
+
+	// Dagger:A fast dependency injector for Android and Java.
+	implementation 'com.google.dagger:dagger:2.27'
+
+	// Dagger Compiler:A fast dependency injector for Android and Java.
+	kapt 'com.google.dagger:dagger-compiler:2.27'
 }
 
 compileKotlin {

@@ -41,6 +41,34 @@
     "name": "Webcam Capture",
     "description": "This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS)."
    }
+  },
+  {
+   "id": 4,
+   "type": "implementation",
+   "installed_name": "dagger",
+   "gpm_dep": {
+    "artifact_id": "dagger",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/com.google.dagger/dagger",
+    "get_from": "Central",
+    "group_id": "com.google.dagger",
+    "name": "Dagger",
+    "description": "A fast dependency injector for Android and Java."
+   }
+  },
+  {
+   "id": 5,
+   "type": "implementation",
+   "installed_name": "dagger-compiler",
+   "gpm_dep": {
+    "artifact_id": "dagger-compiler",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/com.google.dagger/dagger-compiler",
+    "get_from": "Central",
+    "group_id": "com.google.dagger",
+    "name": "Dagger Compiler",
+    "description": "A fast dependency injector for Android and Java."
+   }
   }
  ]
 }
