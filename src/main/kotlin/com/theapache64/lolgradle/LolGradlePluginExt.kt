@@ -10,7 +10,7 @@ open class LolGradlePluginExt {
     /**
      * To control logging
      */
-    var isLoggingEnabled: Boolean = false
+    var isLoggingEnabled: Boolean = true
 
     /**
      * Directory name. If not given, project name will be considered as dirName.
@@ -61,4 +61,6 @@ open class LolGradlePluginExt {
          */
         FAIL
     }
+
+    var captureOn = arrayOf("build")
 }

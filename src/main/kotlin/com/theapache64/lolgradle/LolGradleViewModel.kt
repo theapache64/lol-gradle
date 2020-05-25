@@ -15,11 +15,30 @@ import javax.inject.Inject
  */
 class LolGradleViewModel @Inject constructor() {
 
+    private lateinit var project: Project
+    private lateinit var ext: LolGradlePluginExt
+
     companion object {
         private const val DEFAULT_WAIT_IN_SEC = 5L
+        const val MSG_WEBCAM_FOUND = "Webcam available"
     }
 
-    fun capture(ext: LolGradlePluginExt, project: Project) {
+    fun init(project: Project) {
+        this.project = project
+        this.ext = project.extensions.create(LolGradlePlugin.CONFIG_NAME, LolGradlePluginExt::class.java)
+
+        // Define capture task
+        project.task(LolGradlePlugin.TASK_CAPTURE) {
+            it.doLast {
+                capture()
+            }
+        }
+
+        // Defining when capture task should be executed
+
+    }
+
+    private fun capture() {
 
         IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
@@ -33,19 +52,17 @@ class LolGradleViewModel @Inject constructor() {
             LolGradlePluginExt.Strategy.WAIT_FOREVER -> Long.MAX_VALUE
         }
 
-        val webCams = Webcam.getWebcams(timeout)
-        log("${webCams.size} webcam(s) available")
+        val webCam = Webcam.getDefault()
+        log(MSG_WEBCAM_FOUND)
 
-        if (webCams.isEmpty()) {
+        if (webCam == null) {
             if (ext.lolPicStrategy == LolGradlePluginExt.Strategy.FAIL) {
                 throw IOException("No cam found.")
             }
-
         } else {
 
             // cam found
-            val defaultCam = webCams.first()
-            defaultCam.open()
+            webCam.open()
 
             val dirName = ext.dirName ?: project.name
             val outputDir =
@@ -57,7 +74,10 @@ class LolGradleViewModel @Inject constructor() {
                 require(imageFile.parentFile.mkdirs()) { "Failed to create parent directory" }
             }
 
-            ImageIO.write(defaultCam.image, "PNG", imageFile)
+            ImageIO.write(webCam.image, "PNG", imageFile)
+            webCam.close()
         }
     }
+
+
 }

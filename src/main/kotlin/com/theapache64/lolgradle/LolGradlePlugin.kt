@@ -28,13 +28,6 @@ class LolGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         DaggerLolGradleComponent.builder().build().inject(this)
-
-        val ext = project.extensions.create(CONFIG_NAME, LolGradlePluginExt::class.java)
-
-        project.task(TASK_CAPTURE) {
-            it.doLast {
-                lolGradleViewModel.capture(ext, project)
-            }
-        }
+        lolGradleViewModel.init(project)
     }
 }

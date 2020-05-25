@@ -23,6 +23,9 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    // Webcam Capture:This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).
+    implementation 'com.github.sarxos:webcam-capture:0.3.12'
+
 }
 
 compileKotlin {
@@ -34,4 +37,5 @@ compileTestKotlin {
 
 lolGradle {
     dirName = "myDir"
+    captureOn = ["compileJava"]
 }
