@@ -72,10 +72,10 @@ class LolGradlePluginTest {
         outputDir.deleteRecursively()
 
         val result = gradleRunner
-            .withArguments(LolGradlePlugin.TASK_CAPTURE)
+            .withArguments(LolGradleViewModel.TASK_CAPTURE)
             .build()
 
-        result.task(":${LolGradlePlugin.TASK_CAPTURE}")!!.outcome.should.equal(TaskOutcome.SUCCESS)
+        result.task(":${LolGradleViewModel.TASK_CAPTURE}")!!.outcome.should.equal(TaskOutcome.SUCCESS)
         result.output.should.contain(LolGradleViewModel.MSG_WEBCAM_FOUND)
         outputDir.listFiles().should.not.`null`
         outputDir.listFiles()?.size.should.equal(1)
@@ -141,7 +141,6 @@ class LolGradlePluginTest {
     }
 
 
-    // TODO
     @Test
     fun `Impact style`() {
         val outputPath = "${System.getProperty("user.home")}/Desktop/MyLolPicsAtDesktop"

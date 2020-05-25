@@ -16,13 +16,6 @@ import javax.inject.Inject
  */
 class LolGradlePlugin : Plugin<Project> {
 
-
-    companion object {
-        const val CONFIG_NAME = "lolGradle"
-        const val PLUGIN_NAME = "lol-gradle"
-        const val TASK_CAPTURE = "capture"
-    }
-
     @Inject
     lateinit var lolGradleViewModel: LolGradleViewModel
 

@@ -21,20 +21,26 @@ class LolGradleViewModel @Inject constructor() {
     companion object {
         private const val DEFAULT_WAIT_IN_SEC = 5L
         const val MSG_WEBCAM_FOUND = "Webcam available"
+        const val CONFIG_NAME = "lolGradle"
+        const val PLUGIN_NAME = "lol-gradle"
+        const val TASK_CAPTURE = "capture"
     }
 
     fun init(project: Project) {
         this.project = project
-        this.ext = project.extensions.create(LolGradlePlugin.CONFIG_NAME, LolGradlePluginExt::class.java)
+        this.ext = project.extensions.create(CONFIG_NAME, LolGradlePluginExt::class.java)
 
         // Define capture task
-        project.task(LolGradlePlugin.TASK_CAPTURE) {
+        project.task(TASK_CAPTURE) {
             it.doLast {
                 capture()
             }
         }
 
         // Defining when capture task should be executed
+        ext.captureOn.forEach { taskName ->
+            project.tasks.getByName(taskName).dependsOn(TASK_CAPTURE)
+        }
 
     }
 
@@ -42,8 +48,8 @@ class LolGradleViewModel @Inject constructor() {
 
         IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
-
         log("Capturing lolpic...")
+
         // Getting timeout value
         val timeout = when (ext.lolPicStrategy) {
             LolGradlePluginExt.Strategy.NONE,
@@ -52,7 +58,7 @@ class LolGradleViewModel @Inject constructor() {
             LolGradlePluginExt.Strategy.WAIT_FOREVER -> Long.MAX_VALUE
         }
 
-        val webCam = Webcam.getDefault()
+        val webCam = Webcam.getDefault(timeout)
         log(MSG_WEBCAM_FOUND)
 
         if (webCam == null) {
@@ -66,7 +72,7 @@ class LolGradleViewModel @Inject constructor() {
 
             val dirName = ext.dirName ?: project.name
             val outputDir =
-                ext.outputDir ?: "${System.getProperty("user.home")}/${LolGradlePlugin.PLUGIN_NAME}/$dirName"
+                ext.outputDir ?: "${System.getProperty("user.home")}/${PLUGIN_NAME}/$dirName"
 
             val imageFile = File("$outputDir/${System.currentTimeMillis()}.png")
 
