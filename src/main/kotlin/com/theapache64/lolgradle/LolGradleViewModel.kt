@@ -15,8 +15,6 @@ import javax.inject.Inject
  */
 class LolGradleViewModel @Inject constructor() {
 
-    private lateinit var project: Project
-    private lateinit var ext: LolGradlePluginExt
 
     companion object {
         private const val DEFAULT_WAIT_IN_SEC = 5L
@@ -27,26 +25,38 @@ class LolGradleViewModel @Inject constructor() {
     }
 
     fun init(project: Project) {
-        this.project = project
-        this.ext = project.extensions.create(CONFIG_NAME, LolGradlePluginExt::class.java)
 
         // Define capture task
-        project.task(TASK_CAPTURE) {
-            it.doLast {
-                capture()
+        val ext = project.extensions.create(CONFIG_NAME, LolGradlePluginExt::class.java)
+
+        project.afterEvaluate {
+            log("Configuring lol-gradle...")
+            IS_LOGGER_ENABLED = ext.isLoggingEnabled
+
+            // Defining when capture task should be executed
+            log("Dir name -> ${ext.dirName}")
+            log("Capture flags are -> ${ext.captureOn.toList()}")
+
+            ext.captureOn.forEach { taskName ->
+                project.tasks.getByName(taskName).dependsOn(TASK_CAPTURE)
             }
         }
 
-        // Defining when capture task should be executed
-        ext.captureOn.forEach { taskName ->
-            project.tasks.getByName(taskName).dependsOn(TASK_CAPTURE)
+        project.task(TASK_CAPTURE) {
+            log("Task created...")
+            it.doLast {
+
+                log("Task doLast called")
+                IS_LOGGER_ENABLED = ext.isLoggingEnabled
+                capture(project, ext)
+            }
         }
+
 
     }
 
-    private fun capture() {
+    private fun capture(project: Project, ext: LolGradlePluginExt) {
 
-        IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
         log("Capturing lolpic...")
 
@@ -59,13 +69,14 @@ class LolGradleViewModel @Inject constructor() {
         }
 
         val webCam = Webcam.getDefault(timeout)
-        log(MSG_WEBCAM_FOUND)
+
 
         if (webCam == null) {
             if (ext.lolPicStrategy == LolGradlePluginExt.Strategy.FAIL) {
                 throw IOException("No cam found.")
             }
         } else {
+            log(MSG_WEBCAM_FOUND)
 
             // cam found
             webCam.open()

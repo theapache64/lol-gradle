@@ -67,15 +67,20 @@ class LolGradlePluginTest {
             .withTestKitDir(testProjectDir.newFolder())
     }
 
-    private fun assertOutputDirHasOneLolPic(outputDir: File, gradleRunner: GradleRunner): File {
+    private fun assertOutputDirHasOneLolPic(
+        outputDir: File,
+        gradleRunner: GradleRunner,
+        taskName: String = LolGradleViewModel.TASK_CAPTURE,
+        taskOutcome: TaskOutcome = TaskOutcome.SUCCESS
+    ): File {
 
         outputDir.deleteRecursively()
 
         val result = gradleRunner
-            .withArguments(LolGradleViewModel.TASK_CAPTURE)
+            .withArguments(taskName)
             .build()
 
-        result.task(":${LolGradleViewModel.TASK_CAPTURE}")!!.outcome.should.equal(TaskOutcome.SUCCESS)
+        result.task(":$taskName")!!.outcome.should.equal(taskOutcome)
         result.output.should.contain(LolGradleViewModel.MSG_WEBCAM_FOUND)
         outputDir.listFiles().should.not.`null`
         outputDir.listFiles()?.size.should.equal(1)
@@ -100,7 +105,7 @@ class LolGradlePluginTest {
 
     @Test
     fun `Dir name config`() {
-        val dirName = "MyLolPics"
+        val dirName = "MyLolPicsz"
         val gradleRunner = getRunner(
             """
             plugins {
@@ -140,6 +145,30 @@ class LolGradlePluginTest {
         image.parentFile.absolutePath.should.equal(outputPath)
     }
 
+
+    @Test
+    fun `Capture on`() {
+        val gradleRunner = getRunner(
+            """
+            plugins {
+                id 'java'
+                id 'com.theapache64.lol-gradle'
+            }
+            
+            lolGradle{
+                captureOn = ["clean"]    
+            }
+        """.trimIndent()
+        )
+
+        val outputDir = File("${System.getProperty("user.home")}/lol-gradle/${gradleRunner.projectDir.name}")
+        assertOutputDirHasOneLolPic(
+            outputDir,
+            gradleRunner,
+            "clean",
+            TaskOutcome.UP_TO_DATE
+        )
+    }
 
     @Test
     fun `Impact style`() {

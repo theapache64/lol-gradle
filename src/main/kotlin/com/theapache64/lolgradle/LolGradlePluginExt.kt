@@ -1,7 +1,5 @@
 package com.theapache64.lolgradle
 
-import java.util.*
-
 /**
  * Created by theapache64 : May 24 Sun,2020 @ 12:21
  */
@@ -62,5 +60,8 @@ open class LolGradlePluginExt {
         FAIL
     }
 
-    var captureOn = arrayOf("build")
+    /**
+     * To set capture tasks.
+     */
+    var captureOn: Set<String> = mutableSetOf("build")
 }
