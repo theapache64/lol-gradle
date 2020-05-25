@@ -1,6 +1,7 @@
 package com.theapache64.lolgradle
 
 import com.github.sarxos.webcam.Webcam
+import com.github.sarxos.webcam.WebcamUpdater
 import com.theapache64.lolgradle.utils.IS_LOGGER_ENABLED
 import com.theapache64.lolgradle.utils.log
 import org.gradle.api.Project
@@ -57,7 +58,6 @@ class LolGradleViewModel @Inject constructor() {
 
     private fun capture(project: Project, ext: LolGradlePluginExt) {
 
-
         log("Capturing lolpic...")
 
         // Getting timeout value
@@ -70,7 +70,6 @@ class LolGradleViewModel @Inject constructor() {
 
         val webCam = Webcam.getDefault(timeout)
 
-
         if (webCam == null) {
             if (ext.lolPicStrategy == LolGradlePluginExt.Strategy.FAIL) {
                 throw IOException("No cam found.")
@@ -79,7 +78,7 @@ class LolGradleViewModel @Inject constructor() {
             log(MSG_WEBCAM_FOUND)
 
             // cam found
-            webCam.open()
+            webCam.open(TimeUnit.SECONDS.toMillis(10))
 
             val dirName = ext.dirName ?: project.name
             val outputDir =
@@ -95,6 +94,10 @@ class LolGradleViewModel @Inject constructor() {
             webCam.close()
         }
     }
+}
 
+// TODO : Try implement this method
+fun Webcam.open(timeout: Long) {
+    println("Opening webcam with timeout")
 
 }
