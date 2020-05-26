@@ -26,14 +26,7 @@ open class LolGradlePluginExt {
     var lolPicStrategy: Strategy = Strategy.NONE
     var waitTimeInSec = 10L
 
-    /**
-     * Output style
-     */
-    var style: Style = Style.IMPACT
 
-    enum class Style {
-        IMPACT, MODERN
-    }
 
     /**
      * Waiting strategy
@@ -64,4 +57,13 @@ open class LolGradlePluginExt {
      * To set capture tasks.
      */
     var captureOn: Set<String> = mutableSetOf("build")
+
+    /**
+     * Output style
+     */
+    var style: Style = Style.IMPACT
+
+    enum class Style {
+        IMPACT, MODERN
+    }
 }
