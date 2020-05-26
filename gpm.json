@@ -69,6 +69,20 @@
     "name": "Dagger Compiler",
     "description": "A fast dependency injector for Android and Java."
    }
+  },
+  {
+   "id": 6,
+   "type": "implementation",
+   "installed_name": "coroutines",
+   "gpm_dep": {
+    "artifact_id": "kotlinx-coroutines-core",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core",
+    "get_from": "Central",
+    "group_id": "org.jetbrains.kotlinx",
+    "name": "Kotlinx Coroutines Core",
+    "description": "Coroutines support libraries for Kotlin"
+   }
   }
  ]
 }

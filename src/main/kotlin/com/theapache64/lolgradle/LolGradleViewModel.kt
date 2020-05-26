@@ -49,6 +49,7 @@ class LolGradleViewModel @Inject constructor() {
 
                 log("Task doLast called")
                 IS_LOGGER_ENABLED = ext.isLoggingEnabled
+
                 capture(project, ext)
             }
         }
@@ -68,36 +69,44 @@ class LolGradleViewModel @Inject constructor() {
             LolGradlePluginExt.Strategy.WAIT_FOREVER -> Long.MAX_VALUE
         }
 
-        val webCam = Webcam.getDefault(timeout)
+        var isCaptureDone = false
+        val captureThread = Thread {
 
-        if (webCam == null) {
-            if (ext.lolPicStrategy == LolGradlePluginExt.Strategy.FAIL) {
-                throw IOException("No cam found.")
+            val webCam = Webcam.getDefault(timeout)
+
+            if (webCam == null) {
+                if (ext.lolPicStrategy == LolGradlePluginExt.Strategy.FAIL) {
+                    throw IOException("No cam found.")
+                }
+            } else {
+                log(MSG_WEBCAM_FOUND)
+
+                // cam found
+                webCam.open()
+
+                val dirName = ext.dirName ?: project.name
+                val outputDir =
+                    ext.outputDir ?: "${System.getProperty("user.home")}/${PLUGIN_NAME}/$dirName"
+
+                val imageFile = File("$outputDir/${System.currentTimeMillis()}.png")
+
+                if (!imageFile.parentFile.exists()) {
+                    require(imageFile.parentFile.mkdirs()) { "Failed to create parent directory" }
+                }
+
+                ImageIO.write(webCam.image, "PNG", imageFile)
+                webCam.close()
+                isCaptureDone = true
             }
+        }
+
+        captureThread.start()
+        captureThread.join(timeout)
+
+        if (isCaptureDone) {
+            log("Captured")
         } else {
-            log(MSG_WEBCAM_FOUND)
-
-            // cam found
-            webCam.open(TimeUnit.SECONDS.toMillis(10))
-
-            val dirName = ext.dirName ?: project.name
-            val outputDir =
-                ext.outputDir ?: "${System.getProperty("user.home")}/${PLUGIN_NAME}/$dirName"
-
-            val imageFile = File("$outputDir/${System.currentTimeMillis()}.png")
-
-            if (!imageFile.parentFile.exists()) {
-                require(imageFile.parentFile.mkdirs()) { "Failed to create parent directory" }
-            }
-
-            ImageIO.write(webCam.image, "PNG", imageFile)
-            webCam.close()
+            log("Capture timeout")
         }
     }
-}
-
-// TODO : Try implement this method
-fun Webcam.open(timeout: Long) {
-    println("Opening webcam with timeout")
-
 }
