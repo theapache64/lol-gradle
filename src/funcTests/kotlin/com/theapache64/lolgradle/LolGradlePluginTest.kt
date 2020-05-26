@@ -186,9 +186,9 @@ class LolGradlePluginTest {
         """.trimIndent()
         )
 
-/*        val outputDir = File(outputPath)
+        val outputDir = File(outputPath)
         val image = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
-        image.name.should.contain("impact")*/
+        image.name.should.contain("impact")
     }
 
 }
