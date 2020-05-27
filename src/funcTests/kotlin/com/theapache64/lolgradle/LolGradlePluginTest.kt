@@ -199,4 +199,26 @@ class LolGradlePluginTest {
         val resultImage = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
         resultImage.name.should.contain("modern")
     }
+
+    @Test
+    fun `Impact style`() {
+        val dirName = "lolGradleImpactTest"
+        val outputPath = "${System.getProperty("user.home")}/$MAIN_DIR/$dirName"
+        val gradleRunner = getRunner(
+            """
+            plugins {
+                id 'java'
+                id 'com.theapache64.lol-gradle'
+            }
+            
+            lolGradle {
+                dirName = '$dirName'
+                style = 'IMPACT'   
+            }
+            """.trimIndent()
+        )
+        val outputDir = File(outputPath)
+        val resultImage = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
+        resultImage.name.should.contain("impact")
+    }
 }

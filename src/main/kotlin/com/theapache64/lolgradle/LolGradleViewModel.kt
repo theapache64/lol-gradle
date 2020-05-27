@@ -108,7 +108,9 @@ class LolGradleViewModel @Inject constructor() {
                 when (ext.style) {
 
                     LolGradlePluginExt.Style.IMPACT -> {
-                        TODO("Not implemented")
+                        val outputFile = File("${imageFile.parent}/impact_${imageFile.name}")
+                        daVinci.drawImpact(task.name, outputFile)
+                        imageFile.delete()
                     }
 
                     LolGradlePluginExt.Style.MODERN -> {
