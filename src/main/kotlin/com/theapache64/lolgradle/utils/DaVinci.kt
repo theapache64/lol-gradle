@@ -1,12 +1,11 @@
 package com.theapache64.lolgradle.utils
 
-import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Font
 import java.awt.RenderingHints
 import java.io.File
-import java.io.InputStream
-import java.lang.Math.sqrt
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.imageio.ImageIO
 
 /**
@@ -14,11 +13,11 @@ import javax.imageio.ImageIO
  */
 
 class DaVinci(
-    private val inputFile: File
+    inputFile: File
 ) {
 
     companion object {
-        private val transBlack by lazy { Color(0, 0, 0, 180) }
+        private val transBlack by lazy { Color(0, 0, 0, 150) }
         private val robotoRegular by lazy {
             val fontRes = DaVinci::class.java.getResourceAsStream("/roboto_thin.ttf")
             Font.createFont(Font.TRUETYPE_FONT, fontRes)
@@ -27,14 +26,11 @@ class DaVinci(
         private const val WIDTH = 640
         private const val HEIGHT = 480
         private val DIAGONAL = kotlin.math.sqrt((WIDTH * WIDTH + HEIGHT * HEIGHT).toDouble())
-        private const val FONT_SIZE = 30
-
-        private fun calcFontSize(videoWidth: Int, videoHeight: Int): Float {
-            return (kotlin.math.sqrt((videoWidth * videoWidth + videoHeight * videoHeight).toDouble()) / DIAGONAL * FONT_SIZE).toFloat()
-        }
+        private val dateFormat = SimpleDateFormat("EEE, MMM dd, YYYY h:mm a")
     }
 
     private val input = ImageIO.read(inputFile)
+
 
     /**
      * To draw modern style on the given image
@@ -58,19 +54,36 @@ class DaVinci(
 
         // Draw text
         canvas.paint = Color.WHITE
-        val fontSize = calcFontSize(input.width, input.height)
-        canvas.font = robotoRegular.deriveFont(Font.PLAIN, fontSize)
-        val fm = canvas.fontMetrics
-        val tx = (input.width / 2) - (fm.stringWidth(text) / 2)
-        val ty = (input.height / 2) + (fm.height / 2)
-        canvas.drawString(text, tx, ty)
+
+        // Title font size
+        val titleFontSize = calcFontSize(30)
+        canvas.font = robotoRegular.deriveFont(Font.PLAIN, titleFontSize)
+        val titleFm = canvas.fontMetrics
+        val titleX = (input.width / 2) - (titleFm.stringWidth(text) / 2)
+        val titleY = (input.height / 2) + (titleFm.height / 2)
+        canvas.drawString(text, titleX, titleY)
+
+        // Date font size
+        val dateFontSize = calcFontSize(17)
+        canvas.font = robotoRegular.deriveFont(Font.PLAIN, dateFontSize)
+        val dateFm = canvas.fontMetrics
+        val dateText = dateFormat.format(Date())
+        val dateX = (input.width / 2) - (dateFm.stringWidth(dateText) / 2)
+        val dateY = input.height - dateFm.height
+        canvas.drawString(dateText, dateX, dateY)
+
         canvas.dispose()
 
-        outputFile.delete()
         if (!outputFile.parentFile.exists()) {
             outputFile.parentFile.mkdirs()
         }
 
         ImageIO.write(input, "PNG", outputFile)
+    }
+
+    private fun calcFontSize(fontSize: Int): Float {
+        val imageWidth = input.width
+        val imageHeight = input.height
+        return (kotlin.math.sqrt((imageWidth * imageWidth + imageHeight * imageHeight).toDouble()) / DIAGONAL * fontSize).toFloat()
     }
 }

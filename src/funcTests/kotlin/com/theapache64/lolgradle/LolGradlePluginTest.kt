@@ -17,13 +17,16 @@ class LolGradlePluginTest {
 
 
     companion object {
+
+        private const val MAIN_DIR = "lol-gradle"
+
         private lateinit var process: Process
 
         @BeforeClass
         @JvmStatic
         fun beforeClass() {
             println("Cam opened")
-            process = Runtime.getRuntime().exec("droidcam-cli 192.168.1.101 4747")
+            process = Runtime.getRuntime().exec("droidcam-cli 192.168.5.7 4747")
         }
 
         @AfterClass
@@ -80,8 +83,11 @@ class LolGradlePluginTest {
             .withArguments(taskName)
             .build()
 
+        println("OUTPUT: ${result.output}")
+
         result.task(":$taskName")!!.outcome.should.equal(taskOutcome)
         result.output.should.contain(LolGradleViewModel.MSG_WEBCAM_FOUND)
+        println("Output dir is ${outputDir.absolutePath}")
         outputDir.listFiles().should.not.`null`
         outputDir.listFiles()?.size.should.equal(1)
         return outputDir.listFiles()!!.first()
@@ -99,7 +105,7 @@ class LolGradlePluginTest {
         """.trimIndent()
         )
 
-        val outputDir = File("${System.getProperty("user.home")}/lol-gradle/${gradleRunner.projectDir.name}")
+        val outputDir = File("${System.getProperty("user.home")}/$MAIN_DIR/${gradleRunner.projectDir.name}")
         assertOutputDirHasOneLolPic(outputDir, gradleRunner)
     }
 
@@ -119,7 +125,7 @@ class LolGradlePluginTest {
         """.trimIndent()
         )
 
-        val outputDir = File("${System.getProperty("user.home")}/lol-gradle/$dirName")
+        val outputDir = File("${System.getProperty("user.home")}/$MAIN_DIR/$dirName")
         val image = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
         image.parentFile.name.should.equal(dirName)
     }
@@ -148,6 +154,7 @@ class LolGradlePluginTest {
 
     @Test
     fun `Capture on`() {
+        println("Testing capture on")
         val gradleRunner = getRunner(
             """
             plugins {
@@ -156,12 +163,12 @@ class LolGradlePluginTest {
             }
             
             lolGradle{
-                captureOn = ["clean"]    
+                captureOn = ['clean']    
             }
         """.trimIndent()
         )
 
-        val outputDir = File("${System.getProperty("user.home")}/lol-gradle/${gradleRunner.projectDir.name}")
+        val outputDir = File("${System.getProperty("user.home")}/$MAIN_DIR/${gradleRunner.projectDir.name}")
         assertOutputDirHasOneLolPic(
             outputDir,
             gradleRunner,
@@ -171,8 +178,9 @@ class LolGradlePluginTest {
     }
 
     @Test
-    fun `Impact style`() {
-        val outputPath = "${System.getProperty("user.home")}/Desktop/MyLolPicsAtDesktop"
+    fun `Modern style`() {
+        val dirName = "lolGradleModernTest"
+        val outputPath = "${System.getProperty("user.home")}/$MAIN_DIR/$dirName"
         val gradleRunner = getRunner(
             """
             plugins {
@@ -181,14 +189,14 @@ class LolGradlePluginTest {
             }
             
             lolGradle {
-                style = "IMPACT"   
+                dirName = '$dirName'
+                style = 'MODERN'   
             }
         """.trimIndent()
         )
 
         val outputDir = File(outputPath)
-        val image = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
-        image.name.should.contain("impact")
+        val resultImage = assertOutputDirHasOneLolPic(outputDir, gradleRunner)
+        resultImage.name.should.contain("modern")
     }
-
 }

@@ -2,9 +2,11 @@ package com.theapache64.lolgradle
 
 import com.github.sarxos.webcam.Webcam
 import com.github.sarxos.webcam.WebcamUpdater
+import com.theapache64.lolgradle.utils.DaVinci
 import com.theapache64.lolgradle.utils.IS_LOGGER_ENABLED
 import com.theapache64.lolgradle.utils.log
 import org.gradle.api.Project
+import org.gradle.api.Task
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -44,22 +46,26 @@ class LolGradleViewModel @Inject constructor() {
         }
 
         project.task(TASK_CAPTURE) {
-            log("Task created...")
-            it.doLast {
+            log("Task created... : ${it.dependsOn.toList()}")
+            it.doLast { task ->
 
                 log("Task doLast called")
                 IS_LOGGER_ENABLED = ext.isLoggingEnabled
 
-                capture(project, ext)
+                capture(task, project, ext)
             }
         }
 
 
     }
 
-    private fun capture(project: Project, ext: LolGradlePluginExt) {
+    private fun capture(task: Task, project: Project, ext: LolGradlePluginExt) {
 
         log("Capturing lolpic...")
+
+        println("1) Depends on -> ${task.dependsOn.toList()}")
+        println("1) Actions -> ${task.actions.toList()}")
+        println("1) Actions -> ${task.taskDependencies.getDependencies(null).toList()}")
 
         // Getting timeout value
         val timeout = when (ext.lolPicStrategy) {
@@ -96,6 +102,24 @@ class LolGradleViewModel @Inject constructor() {
 
                 ImageIO.write(webCam.image, "PNG", imageFile)
                 webCam.close()
+
+                // Applying style
+                val daVinci = DaVinci(imageFile)
+                when (ext.style) {
+
+                    LolGradlePluginExt.Style.IMPACT -> {
+                        TODO("Not implemented")
+                    }
+
+                    LolGradlePluginExt.Style.MODERN -> {
+                        val outputFile = File("${imageFile.parent}/modern_${imageFile.name}")
+                        daVinci.drawModern(task.name, outputFile)
+                        imageFile.delete()
+                    }
+                }
+
+
+
                 isCaptureDone = true
             }
         }
