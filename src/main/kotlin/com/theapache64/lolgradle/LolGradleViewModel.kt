@@ -64,8 +64,8 @@ class LolGradleViewModel @Inject constructor() {
         log("Capturing lolpic...")
 
         println("1) Depends on -> ${task.dependsOn.toList()}")
-        println("1) Actions -> ${task.actions.toList()}")
-        println("1) Actions -> ${task.taskDependencies.getDependencies(null).toList()}")
+        println("2) Actions -> ${task.actions.toList()}")
+        println("3) Dependencies -> ${task.taskDependencies.getDependencies(null).toList()}")
 
         // Getting timeout value
         val timeout = when (ext.lolPicStrategy) {

@@ -2,18 +2,23 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.72'
     id 'java-gradle-plugin'
     id 'maven'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.5'
 }
 
 apply plugin: 'kotlin-kapt'
 
 group 'com.theapache64'
-version '0.0.1'
+def theVersion = "1.0.0"
+version "$theVersion"
 
 repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
 }
+
+
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
@@ -60,6 +65,53 @@ artifacts {
     archives javadocJar
 }
 
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "shifarshifz"
+            name "shifarshifz"
+            email "theapache64@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/theapache64/lol-gradle"
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            groupId 'com.theapache64'
+            artifactId 'lol-gradle'
+            version "$theVersion"
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Capture the gradle face ;)')
+                root.appendNode('name', 'lol-gradle')
+                root.appendNode('url', 'https://github.com/theapache64/lol-gradle')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+
 gradlePlugin {
     plugins {
         lolGradlePlugin {
@@ -67,6 +119,26 @@ gradlePlugin {
             implementationClass = 'com.theapache64.lolgradle.LolGradlePlugin'
         }
     }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'maven'
+        name = 'lol-gradle'
+        userOrg = 'shifarshifz'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/theapache64/lol-gradle.git'
+        version {
+            name = "$theVersion"
+            desc = "$theVersion"
+            released = new Date()
+        }
+    }
+
 }
 
 sourceSets {
@@ -84,8 +156,6 @@ task functionalTest(type: Test){
     testClassesDirs = sourceSets.functionalTests.output.classesDirs
     classpath = sourceSets.functionalTests.runtimeClasspath
 }
-
-
 
 check.dependsOn functionalTest
 
